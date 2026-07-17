@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salary Estimator</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <p class="eyebrow">Compensation Model &middot; Linear Regression</p>
+        <h1>Salary Estimator</h1>
+      </div>
+      <div class="ticker">
+        R&sup2; 0.963<br>
+        MAE &plusmn; $5,436
+      </div>
+    </header>
+
+    <form method="POST" action="/predict">
+      <p class="section-label">Role</p>
+      <div class="grid">
+        <div class="field full">
+          <label for="job_title">Job title</label>
+          <select name="job_title" id="job_title" required>
+            {% for opt in category_options['job_title'] %}
+            <option value="{{ opt }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="education_level">Education level</label>
+          <select name="education_level" id="education_level" required>
+            {% for opt in category_options['education_level'] %}
+            <option value="{{ opt }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="industry">Industry</label>
+          <select name="industry" id="industry" required>
+            {% for opt in category_options['industry'] %}
+            <option value="{{ opt }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <p class="section-label">Company</p>
+      <div class="grid">
+        <div class="field">
+          <label for="company_size">Company size</label>
+          <select name="company_size" id="company_size" required>
+            {% for opt in category_options['company_size'] %}
+            <option value="{{ opt }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <select name="location" id="location" required>
+            {% for opt in category_options['location'] %}
+            <option value="{{ opt }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field full">
+          <label for="remote_work">Remote work</label>
+          <select name="remote_work" id="remote_work" required>
+            {% for opt in category_options['remote_work'] %}
+            <option value="{{ opt }}">{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <p class="section-label">Profile</p>
+      <div class="grid">
+        <div class="field">
+          <label for="experience_years">Years of experience</label>
+          <input type="number" name="experience_years" id="experience_years"
+                 min="{{ numeric_ranges['experience_years'][0] }}"
+                 max="{{ numeric_ranges['experience_years'][1] }}" required>
+        </div>
+        <div class="field">
+          <label for="skills_count">Skills count</label>
+          <input type="number" name="skills_count" id="skills_count"
+                 min="{{ numeric_ranges['skills_count'][0] }}"
+                 max="{{ numeric_ranges['skills_count'][1] }}" required>
+        </div>
+        <div class="field full">
+          <label for="certifications">Certifications</label>
+          <input type="number" name="certifications" id="certifications"
+                 min="{{ numeric_ranges['certifications'][0] }}"
+                 max="{{ numeric_ranges['certifications'][1] }}" required>
+        </div>
+      </div>
+
+      <button type="submit">Estimate salary</button>
+    </form>
+
+    {% if prediction is not none %}
+    <div class="result">
+      <div class="amount">${{ '{:,.2f}'.format(prediction) }}</div>
+      <div class="caption">Estimated annual salary &middot; based on 250,000 records</div>
+    </div>
+    {% elif error %}
+    <div class="result" style="background:#FBEAEA; border-color:#C0392B;">
+      <div class="caption" style="color:#C0392B;">{{ error }}</div>
+    </div>
+    {% endif %}
+
+    <footer>Employee Salary Prediction &middot; scikit-learn</footer>
+  </div>
+</body>
+</html>
